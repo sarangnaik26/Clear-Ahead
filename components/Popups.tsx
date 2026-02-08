@@ -246,7 +246,22 @@ export const HowToPlayPopup: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
 export const SettingsPopup: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [, setTick] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
   const forceUpdate = () => setTick(t => t + 1);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch (err) {
+      console.error("Error attempting to enable fullscreen:", err);
+    }
+  };
 
   return (
     <div className="absolute inset-0 bg-black/90 flex items-center justify-center p-4 z-50 overflow-hidden">
@@ -269,6 +284,15 @@ export const SettingsPopup: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               className={`py-2 md:py-3 rounded-lg border-b-2 md:border-b-4 pixel-font text-[10px] md:text-lg transition-all ${audioService.musicEnabled ? 'bg-green-600 border-green-800 text-white' : 'bg-gray-700 border-gray-900 text-gray-500'}`}
             >
               {audioService.musicEnabled ? 'ENABLED' : 'MUTED'}
+            </button>
+          </div>
+          <div className="flex flex-col gap-2">
+            <span className="text-blue-200 pixel-font text-[8px] md:text-sm uppercase">Display</span>
+            <button
+              onClick={() => { audioService.playButtonClick(); toggleFullscreen(); }}
+              className={`py-2 md:py-3 rounded-lg border-b-2 md:border-b-4 pixel-font text-[10px] md:text-lg transition-all ${isFullscreen ? 'bg-blue-600 border-blue-800 text-white' : 'bg-gray-700 border-gray-900 text-gray-500'}`}
+            >
+              {isFullscreen ? 'EXIT FULLSCREEN' : 'GO FULLSCREEN'}
             </button>
           </div>
         </div>
