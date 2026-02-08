@@ -77,9 +77,21 @@ const App: React.FC = () => {
     };
     window.addEventListener('click', startMusicOnInteract);
     window.addEventListener('touchstart', startMusicOnInteract);
+
+    // Handle visibility change to mute/unmute audio
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        audioService.suspend();
+      } else {
+        audioService.resume();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       window.removeEventListener('click', startMusicOnInteract);
       window.removeEventListener('touchstart', startMusicOnInteract);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
