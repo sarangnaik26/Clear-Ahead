@@ -27,7 +27,7 @@ const storage = {
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<GameStatus>('START');
-  
+
   const [mode, setMode] = useState<GameMode>(() => {
     return (storage.get('clearAhead_mode', 'EASY') as GameMode);
   });
@@ -38,7 +38,7 @@ const App: React.FC = () => {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showShop, setShowShop] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  
+
   const [totalCoins, setTotalCoins] = useState<number>(() => {
     const saved = storage.get('clearAhead_total_coins', '0');
     return parseInt(saved, 10);
@@ -55,7 +55,7 @@ const App: React.FC = () => {
     highScore: parseInt(storage.get('clearAhead_highscore', '0'), 10),
     speed: 0
   });
-  
+
   const [milestone, setMilestone] = useState<string | null>(null);
   const [isFirstRun, setIsFirstRun] = useState(!storage.get('clearAhead_tutorial_done', ''));
   const [showTutorial, setShowTutorial] = useState(false);
@@ -189,29 +189,29 @@ const App: React.FC = () => {
 
   return (
     <div className="fixed inset-0 bg-[#0c0c14] flex items-center justify-center overflow-hidden touch-none w-screen h-screen">
-      <div className="relative aspect-[16/9] w-full max-h-full max-w-full shadow-2xl overflow-hidden bg-black flex flex-col items-center justify-center">
-        <GameCanvas 
-          status={status} 
+      <div className="relative w-[min(100vw,177.78vh)] h-[min(100vh,56.25vw)] shadow-2xl overflow-hidden bg-black flex flex-col items-center justify-center">
+        <GameCanvas
+          status={status}
           mode={mode}
           mapType={map}
           character={selectedCharacter}
-          onGameOver={handleGameOver} 
+          onGameOver={handleGameOver}
           onProgress={handleProgress}
           onMilestone={handleMilestone}
           onTutorialShow={() => isFirstRun && setShowTutorial(true)}
           onTutorialAction={handleTutorialComplete}
           showTutorial={showTutorial}
         />
-        
-        <HUD 
-          status={status} 
-          stats={stats} 
-          onPause={() => setStatus('PAUSED')} 
+
+        <HUD
+          status={status}
+          stats={stats}
+          onPause={() => setStatus('PAUSED')}
         />
 
         {status === 'START' && !showHowToPlay && !showShop && !showSettings && (
-          <StartPopup 
-            highScore={stats.highScore} 
+          <StartPopup
+            highScore={stats.highScore}
             totalCoins={totalCoins}
             selectedCharacter={selectedCharacter}
             selectedMode={mode}
@@ -219,8 +219,8 @@ const App: React.FC = () => {
             ownedMapIds={ownedMapIds}
             onModeChange={handleModeChange}
             onMapChange={handleMapChange}
-            onStart={handleStart} 
-            onHowToPlay={() => setShowHowToPlay(true)} 
+            onStart={handleStart}
+            onHowToPlay={() => setShowHowToPlay(true)}
             onOpenShop={() => setShowShop(true)}
             onOpenSettings={() => setShowSettings(true)}
           />
@@ -231,7 +231,7 @@ const App: React.FC = () => {
         )}
 
         {showShop && (
-          <ShopPopup 
+          <ShopPopup
             totalCoins={totalCoins}
             ownedIds={ownedIds}
             ownedMapIds={ownedMapIds}
@@ -250,18 +250,18 @@ const App: React.FC = () => {
         )}
 
         {status === 'GAMEOVER' && (
-          <GameOverPopup 
-            stats={stats} 
-            onRetry={() => handleStart(mode, map)} 
-            onMenu={() => setStatus('START')} 
+          <GameOverPopup
+            stats={stats}
+            onRetry={() => handleStart(mode, map)}
+            onMenu={() => setStatus('START')}
           />
         )}
 
         {status === 'PAUSED' && (
-          <PausePopup 
-            onResume={() => setStatus('PLAYING')} 
-            onRestart={() => handleStart(mode, map)} 
-            onMenu={() => setStatus('START')} 
+          <PausePopup
+            onResume={() => setStatus('PLAYING')}
+            onRestart={() => handleStart(mode, map)}
+            onMenu={() => setStatus('START')}
           />
         )}
 
