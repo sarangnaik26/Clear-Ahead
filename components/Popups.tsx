@@ -56,15 +56,32 @@ export const StartPopup: React.FC<{
     return (
       <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center p-1 md:p-4 text-center z-40 touch-auto overflow-hidden">
         {/* Settings Gear Button */}
-        <button
-          onClick={() => { audioService.playButtonClick(); onOpenSettings(); }}
-          className="absolute top-4 right-4 bg-white/5 p-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors pointer-events-auto"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </button>
+        <div className="absolute top-4 right-4 flex gap-2 z-50 pointer-events-auto">
+          <button
+            onClick={() => {
+              audioService.playButtonClick();
+              if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+              } else {
+                document.exitFullscreen();
+              }
+            }}
+            className="bg-white/5 p-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+            </svg>
+          </button>
+          <button
+            onClick={() => { audioService.playButtonClick(); onOpenSettings(); }}
+            className="bg-white/5 p-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+        </div>
 
         <h1 className="text-lg md:text-5xl text-white mb-1 md:mb-3 pixel-font animate-bounce drop-shadow-[0_2px_0_#2980b9] leading-tight">CLEAR AHEAD</h1>
 
@@ -246,22 +263,7 @@ export const HowToPlayPopup: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
 export const SettingsPopup: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [, setTick] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
   const forceUpdate = () => setTick(t => t + 1);
-
-  const toggleFullscreen = async () => {
-    try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-        setIsFullscreen(true);
-      } else {
-        await document.exitFullscreen();
-        setIsFullscreen(false);
-      }
-    } catch (err) {
-      console.error("Error attempting to enable fullscreen:", err);
-    }
-  };
 
   return (
     <div className="absolute inset-0 bg-black/90 flex items-center justify-center p-4 z-50 overflow-hidden">
@@ -284,15 +286,6 @@ export const SettingsPopup: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               className={`py-2 md:py-3 rounded-lg border-b-2 md:border-b-4 pixel-font text-[10px] md:text-lg transition-all ${audioService.musicEnabled ? 'bg-green-600 border-green-800 text-white' : 'bg-gray-700 border-gray-900 text-gray-500'}`}
             >
               {audioService.musicEnabled ? 'ENABLED' : 'MUTED'}
-            </button>
-          </div>
-          <div className="flex flex-col gap-2">
-            <span className="text-blue-200 pixel-font text-[8px] md:text-sm uppercase">Display</span>
-            <button
-              onClick={() => { audioService.playButtonClick(); toggleFullscreen(); }}
-              className={`py-2 md:py-3 rounded-lg border-b-2 md:border-b-4 pixel-font text-[10px] md:text-lg transition-all ${isFullscreen ? 'bg-blue-600 border-blue-800 text-white' : 'bg-gray-700 border-gray-900 text-gray-500'}`}
-            >
-              {isFullscreen ? 'EXIT FULLSCREEN' : 'GO FULLSCREEN'}
             </button>
           </div>
         </div>
