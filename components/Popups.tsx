@@ -193,7 +193,7 @@ export const ShopPopup: React.FC<{
         </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 w-full max-w-4xl flex-1 overflow-hidden">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 w-full max-w-4xl flex-1 overflow-y-auto pr-1">
         {(activeTab === 'CHARS' ? CHARACTER_DATA : MAP_DATA).map(item => {
           const isOwned = activeTab === 'CHARS' ? ownedIds.includes(item.id) : ownedMapIds.includes(item.id as MapType);
           const isSelected = activeTab === 'CHARS' ? selectedCharId === item.id : selectedMapId === item.id;
