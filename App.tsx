@@ -1,5 +1,6 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 import GameCanvas from './components/GameCanvas.tsx';
 import HUD from './components/HUD.tsx';
 import { StartPopup, HowToPlayPopup, GameOverPopup, PausePopup, MilestonePopup, TutorialPopup, ShopPopup, SettingsPopup } from './components/Popups.tsx';
@@ -67,8 +68,27 @@ const App: React.FC = () => {
     storage.set('clearAhead_total_coins', totalCoins.toString());
   }, [totalCoins]);
 
+  // Grant 5000 gold one-time bonus
+  useEffect(() => {
+    const hasGranted = storage.get('bonus_5000_given', 'false');
+    if (hasGranted === 'false') {
+      setTotalCoins(prev => prev + 5000);
+      storage.set('bonus_5000_given', 'true');
+    }
+  }, []);
+
   // Start music when user first clicks anywhere in the app
   useEffect(() => {
+    // Lock screen orientation to landscape
+    const lockOrientation = async () => {
+      try {
+        await ScreenOrientation.lock({ orientation: 'landscape' });
+      } catch (error) {
+        console.warn('Screen orientation lock failed:', error);
+      }
+    };
+    lockOrientation();
+
     const startMusicOnInteract = () => {
       audioService.init();
       audioService.startMusic();

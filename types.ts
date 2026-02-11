@@ -17,6 +17,13 @@ export interface Character {
   name: string;
   price: number;
   colors: CharacterColors;
+  spriteSource?: string; // Path to sprite sheet
+  spriteConfig?: {
+    frameWidth: number;
+    frameHeight: number;
+    frameCount: number;
+    row: number; // Row in the sprite sheet
+  };
 }
 
 export interface MapItem {
@@ -24,6 +31,15 @@ export interface MapItem {
   name: string;
   price: number;
   description: string;
+  bgImage?: string; // Path to background
+  groundImage?: string; // Path to ground tile
+  obstacleSprites?: {
+    [key in ObstacleType]?: {
+      source: string;
+      frameWidth: number;
+      frameHeight: number;
+    }
+  };
 }
 
 export interface GameStats {
@@ -51,7 +67,7 @@ export interface Obstacle {
   maxHealth: number;
   smashed: boolean;
   particles: Particle[];
-  rotation?: number; 
+  rotation?: number;
   isFalling?: boolean;
 }
 
