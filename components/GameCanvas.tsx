@@ -257,6 +257,13 @@ const GameCanvas: React.FC<Props> = ({ status, mode, mapType, character, onGameO
 
   const handleCanvasClick = (e: React.MouseEvent | React.TouchEvent) => {
     if (status !== 'PLAYING') return;
+
+    // Prevent default to stop mouse emulation on touch devices
+    // and prevent scrolling/zooming while tapping
+    if ('touches' in e) {
+      e.preventDefault();
+    }
+
     handleMouseMove(e);
     processHit(mousePosRef.current.x, mousePosRef.current.y);
   };

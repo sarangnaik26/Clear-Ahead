@@ -289,6 +289,15 @@ export const SettingsPopup: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             </button>
           </div>
         </div>
+        <button
+          onClick={() => {
+            audioService.playButtonClick();
+            window.open('/privacy.html', '_blank');
+          }}
+          className="w-full mb-3 bg-blue-600 hover:bg-blue-500 text-white py-2 md:py-3 rounded border-b-2 md:border-b-4 border-blue-800 pixel-font text-[8px] md:text-sm active:translate-y-0.5 touch-manipulation uppercase"
+        >
+          Privacy Policy
+        </button>
         <button onClick={() => { audioService.playButtonClick(); onClose(); }} className="w-full bg-[#e74c3c] hover:bg-[#c0392b] text-white py-2 md:py-3 rounded border-b-2 md:border-b-4 border-[#922b21] pixel-font text-[8px] md:text-sm active:translate-y-0.5 touch-manipulation uppercase">Close</button>
       </div>
     </div>
