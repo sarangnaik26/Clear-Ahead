@@ -292,7 +292,7 @@ export const SettingsPopup: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         <button
           onClick={() => {
             audioService.playButtonClick();
-            window.open('/privacy.html', '_blank');
+            window.open('https://sarangnaik26.github.io/Clear-Ahead/privacy.html', '_blank');
           }}
           className="w-full mb-3 bg-blue-600 hover:bg-blue-500 text-white py-2 md:py-3 rounded border-b-2 md:border-b-4 border-blue-800 pixel-font text-[8px] md:text-sm active:translate-y-0.5 touch-manipulation uppercase"
         >

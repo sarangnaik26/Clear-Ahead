@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.sarangnaik26.clearahead',
+  appId: 'com.fairyprisme.clearahead',
   appName: 'Clear Ahead',
   webDir: 'dist'
 };
