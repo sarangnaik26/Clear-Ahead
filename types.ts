@@ -3,6 +3,17 @@ export type GameStatus = 'START' | 'PLAYING' | 'PAUSED' | 'GAMEOVER';
 export type GameMode = 'EASY' | 'HARD';
 export type MapType = 'FOREST' | 'SNOW' | 'ROAD' | 'BEACH';
 
+export interface GameTheme {
+  bgTop: string;
+  bgBottom: string;
+  nearTrees: string;
+  midTrees: string;
+  farTrees: string;
+  ground: string;
+  grass: string;
+  water?: string;
+}
+
 export interface CharacterColors {
   hair: string;
   skin: string;

@@ -4,6 +4,7 @@ class AudioService {
   private musicGain: GainNode | null = null;
   private musicLoopId: any = null;
   private currentStep = 0;
+  private isExplicitlySuspended = false;
 
   public soundEnabled = localStorage.getItem('clearAhead_sound') !== 'false';
   public musicEnabled = localStorage.getItem('clearAhead_music') !== 'false';
@@ -15,7 +16,7 @@ class AudioService {
       this.musicGain.connect(this.ctx.destination);
       this.updateMusicVolume();
     }
-    if (this.ctx.state === 'suspended') {
+    if (this.ctx.state === 'suspended' && !this.isExplicitlySuspended) {
       this.ctx.resume();
     }
   }
@@ -117,12 +118,14 @@ class AudioService {
     this.playTone(40, 'square', 0.4, 0.3);
   }
   suspend() {
+    this.isExplicitlySuspended = true;
     if (this.ctx && this.ctx.state === 'running') {
       this.ctx.suspend();
     }
   }
 
   resume() {
+    this.isExplicitlySuspended = false;
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume();
     }

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { GameStats, GameMode, MapType, Character, MapItem } from '../types.ts';
 import { CHARACTER_DATA, MAP_DATA, THEMES } from '../constants.ts';
 import { audioService } from '../services/AudioService.ts';
+import { Capacitor } from '@capacitor/core';
 
 const CharacterPreview: React.FC<{ character: Character, size?: number }> = ({ character, size = 40 }) => {
   const s = size / 20;
@@ -57,21 +58,23 @@ export const StartPopup: React.FC<{
       <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center p-1 md:p-4 text-center z-40 touch-auto overflow-hidden">
         {/* Settings Gear Button */}
         <div className="absolute top-4 right-4 flex gap-2 z-50 pointer-events-auto">
-          <button
-            onClick={() => {
-              audioService.playButtonClick();
-              if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-              } else {
-                document.exitFullscreen();
-              }
-            }}
-            className="bg-white/5 p-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-            </svg>
-          </button>
+          {Capacitor.getPlatform() !== 'android' && (
+            <button
+              onClick={() => {
+                audioService.playButtonClick();
+                if (!document.fullscreenElement) {
+                  document.documentElement.requestFullscreen();
+                } else {
+                  document.exitFullscreen();
+                }
+              }}
+              className="bg-white/5 p-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+              </svg>
+            </button>
+          )}
           <button
             onClick={() => { audioService.playButtonClick(); onOpenSettings(); }}
             className="bg-white/5 p-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"

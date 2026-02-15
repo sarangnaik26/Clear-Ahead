@@ -29,7 +29,6 @@ const GameCanvas: React.FC<Props> = ({ status, mode, mapType, character, onGameO
     playerRotation: 0,
     obstacles: [] as Obstacle[],
     collectibles: [] as Collectible[],
-    bgOffset: 0,
     particles: [] as Particle[],
     speed: 5,
     obstacleTimer: 0,
@@ -38,9 +37,6 @@ const GameCanvas: React.FC<Props> = ({ status, mode, mapType, character, onGameO
     screenShake: 0,
     flashRed: 0,
     frame: 0,
-    theme: THEMES[mapType],
-    nextTheme: THEMES[mapType],
-    themeTransition: 1.0,
     hasTutorialTriggered: false,
     snowflakes: [] as { x: number, y: number, speed: number, size: number }[],
     spriteImage: null as HTMLImageElement | null,
@@ -101,9 +97,6 @@ const GameCanvas: React.FC<Props> = ({ status, mode, mapType, character, onGameO
       screenShake: 0,
       flashRed: 0,
       frame: 0,
-      theme: THEMES[mapType],
-      nextTheme: THEMES[mapType],
-      themeTransition: 1.0,
       hasTutorialTriggered: false,
       snowflakes: snow,
       spriteImage: engineRef.current.spriteImage, // Keep loaded image
@@ -236,35 +229,26 @@ const GameCanvas: React.FC<Props> = ({ status, mode, mapType, character, onGameO
     });
   };
 
-  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+  const handlePointerMove = (e: React.PointerEvent) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const scaleX = CANVAS_WIDTH / rect.width;
     const scaleY = CANVAS_HEIGHT / rect.height;
 
-    let moveX, moveY;
-    if ('touches' in e && (e as any).touches.length > 0) {
-      moveX = ((e as any).touches[0].clientX - rect.left) * scaleX;
-      moveY = ((e as any).touches[0].clientY - rect.top) * scaleY;
-    } else if ('clientX' in (e as any)) {
-      moveX = ((e as any).clientX - rect.left) * scaleX;
-      moveY = ((e as any).clientY - rect.top) * scaleY;
-    } else return;
+    const moveX = (e.clientX - rect.left) * scaleX;
+    const moveY = (e.clientY - rect.top) * scaleY;
 
     mousePosRef.current = { x: moveX, y: moveY };
   };
 
-  const handleCanvasClick = (e: React.MouseEvent | React.TouchEvent) => {
+  const handlePointerDown = (e: React.PointerEvent) => {
     if (status !== 'PLAYING') return;
 
-    // Prevent default to stop mouse emulation on touch devices
-    // and prevent scrolling/zooming while tapping
-    if ('touches' in e) {
-      e.preventDefault();
-    }
+    // Pointer events handle both touch and mouse unified
+    // e.preventDefault() is usually not needed here for pointerdown unless specifically wanting to stop default gestures
 
-    handleMouseMove(e);
+    handlePointerMove(e);
     processHit(mousePosRef.current.x, mousePosRef.current.y);
   };
 
@@ -676,7 +660,7 @@ const GameCanvas: React.FC<Props> = ({ status, mode, mapType, character, onGameO
     }
 
     if (mapType === 'BEACH') {
-      ctx.fillStyle = '#3498db';
+      ctx.fillStyle = theme.water || '#3498db';
       const waterY = BASE_GROUND_Y + 20;
       ctx.fillRect(0, waterY, CANVAS_WIDTH, CANVAS_HEIGHT - waterY);
       ctx.fillStyle = '#fff';
@@ -706,6 +690,15 @@ const GameCanvas: React.FC<Props> = ({ status, mode, mapType, character, onGameO
     engine.obstacles.forEach(obs => drawObstacle(ctx, obs, engine));
     engine.particles.forEach(p => { ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.size, p.size); });
     ctx.globalAlpha = 1.0;
+
+    if (mapType === 'SNOW') {
+      ctx.fillStyle = '#ffffff';
+      engine.snowflakes.forEach(s => {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
 
     drawChaser(ctx, engine);
     drawPlayer(ctx, engine);
@@ -749,9 +742,8 @@ const GameCanvas: React.FC<Props> = ({ status, mode, mapType, character, onGameO
       width={CANVAS_WIDTH}
       height={CANVAS_HEIGHT}
       className="w-full h-full cursor-none"
-      onMouseDown={handleCanvasClick}
-      onTouchStart={handleCanvasClick}
-      onMouseMove={handleMouseMove}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
     />
   );
 };

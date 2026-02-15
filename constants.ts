@@ -1,5 +1,5 @@
 
-import { Character, MapItem } from './types.ts';
+import { Character, MapItem, GameTheme } from './types.ts';
 
 export const CANVAS_WIDTH = 800;
 export const CANVAS_HEIGHT = 450;
@@ -7,7 +7,7 @@ export const BASE_GROUND_Y = 320;
 export const PLAYER_X = 100;
 export const PLAYER_SIZE = 40;
 
-export const THEMES = {
+export const THEMES: Record<string, GameTheme> = {
   FOREST: {
     bgTop: '#08081a',
     bgBottom: '#14142b',
@@ -42,7 +42,8 @@ export const THEMES = {
     midTrees: '#deb887',
     farTrees: '#d2b48c',
     ground: '#f0e68c',
-    grass: '#3498db'
+    grass: '#ffffff', // Represents foam/sand edge
+    water: '#3498db'
   }
 };
 

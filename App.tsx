@@ -1,6 +1,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
+import { App as CapApp } from '@capacitor/app';
 import GameCanvas from './components/GameCanvas.tsx';
 import HUD from './components/HUD.tsx';
 import { StartPopup, HowToPlayPopup, GameOverPopup, PausePopup, MilestonePopup, TutorialPopup, ShopPopup, SettingsPopup } from './components/Popups.tsx';
@@ -98,20 +99,24 @@ const App: React.FC = () => {
     window.addEventListener('click', startMusicOnInteract);
     window.addEventListener('touchstart', startMusicOnInteract);
 
-    // Handle visibility change to mute/unmute audio
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        audioService.suspend();
-      } else {
-        audioService.resume();
-      }
+    // Handle app state change to mute/unmute audio
+    const setupLifecycle = async () => {
+      const listener = await CapApp.addListener('appStateChange', ({ isActive }) => {
+        if (isActive) {
+          audioService.resume();
+        } else {
+          audioService.suspend();
+        }
+      });
+      return listener;
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    const lifecycleListenerPromise = setupLifecycle();
 
     return () => {
       window.removeEventListener('click', startMusicOnInteract);
       window.removeEventListener('touchstart', startMusicOnInteract);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      lifecycleListenerPromise.then(l => l.remove());
     };
   }, []);
 
