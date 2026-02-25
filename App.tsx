@@ -29,6 +29,7 @@ const storage = {
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<GameStatus>('START');
+  const [gameKey, setGameKey] = useState(0);
 
   const [mode, setMode] = useState<GameMode>(() => {
     return (storage.get('clearAhead_mode', 'EASY') as GameMode);
@@ -72,13 +73,15 @@ const App: React.FC = () => {
   // Grant 5000 gold one-time bonus
   useEffect(() => {
     const hasGranted = storage.get('bonus_5000_given', 'false');
+    console.log("Checking bonus. Already granted?", hasGranted);
     if (hasGranted === 'false') {
-      setTotalCoins(prev => prev + 5000);
+      console.log("Granting 5000 gold bonus...");
+      setTotalCoins(prev => prev + 500000);
       storage.set('bonus_5000_given', 'true');
     }
   }, []);
 
-  // Start music when user first clicks anywhere in the app
+  // Lifecycle and Initialization
   useEffect(() => {
     // Lock screen orientation to landscape
     const lockOrientation = async () => {
@@ -90,6 +93,7 @@ const App: React.FC = () => {
     };
     lockOrientation();
 
+    // Interaction handler to start music
     const startMusicOnInteract = () => {
       audioService.init();
       audioService.startMusic();
@@ -99,24 +103,42 @@ const App: React.FC = () => {
     window.addEventListener('click', startMusicOnInteract);
     window.addEventListener('touchstart', startMusicOnInteract);
 
-    // Handle app state change to mute/unmute audio
-    const setupLifecycle = async () => {
-      const listener = await CapApp.addListener('appStateChange', ({ isActive }) => {
-        if (isActive) {
-          audioService.resume();
-        } else {
-          audioService.suspend();
-        }
-      });
-      return listener;
+    // Consolidated handle for app/tab visibility
+    const handleVisibilityUpdate = (isActive: boolean) => {
+      console.log("Visibility change:", isActive ? "Active" : "Background");
+      if (isActive) {
+        audioService.resume();
+      } else {
+        audioService.suspend();
+      }
     };
 
-    const lifecycleListenerPromise = setupLifecycle();
+    // 1. Web visibilitychange (for standard browsers)
+    const onWebVisibilityChange = () => {
+      handleVisibilityUpdate(document.visibilityState === 'visible');
+    };
+    document.addEventListener('visibilitychange', onWebVisibilityChange);
+
+    // 2. Capacitor appStateChange (for native Android/iOS)
+    let lifecycleListener: any = null;
+    let isMounted = true;
+    const setupNativeLifecycle = async () => {
+      const listener = await CapApp.addListener('appStateChange', ({ isActive }) => {
+        if (isMounted) handleVisibilityUpdate(isActive);
+      });
+      lifecycleListener = listener;
+      if (!isMounted) {
+        listener.remove();
+      }
+    };
+    setupNativeLifecycle();
 
     return () => {
+      isMounted = false;
       window.removeEventListener('click', startMusicOnInteract);
       window.removeEventListener('touchstart', startMusicOnInteract);
-      lifecycleListenerPromise.then(l => l.remove());
+      document.removeEventListener('visibilitychange', onWebVisibilityChange);
+      if (lifecycleListener) lifecycleListener.remove();
     };
   }, []);
 
@@ -131,6 +153,7 @@ const App: React.FC = () => {
     storage.set('clearAhead_mode', selectedMode);
     storage.set('clearAhead_map', selectedMap);
     setStatus('PLAYING');
+    setGameKey(prev => prev + 1);
     setStats(prev => ({ ...prev, distance: 0, currency: 0, smashed: 0, speed: 0 }));
     if (isFirstRun) {
       setShowTutorial(true);
@@ -228,6 +251,7 @@ const App: React.FC = () => {
     <div className="fixed inset-0 bg-[#0c0c14] flex items-center justify-center overflow-hidden touch-none w-screen h-screen">
       <div className="relative w-[min(100vw,177.78vh)] h-[min(100vh,56.25vw)] shadow-2xl overflow-hidden bg-black flex flex-col items-center justify-center">
         <GameCanvas
+          key={gameKey}
           status={status}
           mode={mode}
           mapType={map}

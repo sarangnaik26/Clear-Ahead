@@ -56,6 +56,11 @@ export const StartPopup: React.FC<{
 }) => {
     return (
       <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center p-1 md:p-4 text-center z-40 touch-auto overflow-hidden">
+        {/* Version Indicator */}
+        <div className="absolute top-4 left-4 z-50 pointer-events-none">
+          <span className="text-gray-500 pixel-font text-[8px] md:text-[10px]">v1.0</span>
+        </div>
+
         {/* Settings Gear Button */}
         <div className="absolute top-4 right-4 flex gap-2 z-50 pointer-events-auto">
           {Capacitor.getPlatform() !== 'android' && (
@@ -295,7 +300,7 @@ export const SettingsPopup: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         <button
           onClick={() => {
             audioService.playButtonClick();
-            window.open('https://sarangnaik26.github.io/Clear-Ahead/privacy.html', '_blank');
+            window.open('https://sarangnaik26.github.io/FairyPrisme-docs/Privacy-Policy/Game/ClearAhead/', '_blank');
           }}
           className="w-full mb-3 bg-blue-600 hover:bg-blue-500 text-white py-2 md:py-3 rounded border-b-2 md:border-b-4 border-blue-800 pixel-font text-[8px] md:text-sm active:translate-y-0.5 touch-manipulation uppercase"
         >
